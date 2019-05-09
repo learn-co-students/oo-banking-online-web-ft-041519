@@ -3,7 +3,7 @@ require 'pry'
 class Transfer
   # your code here
 
-  attr_reader :sender, :receiver, :amount, :status
+  attr_reader :sender, :receiver, :amount, :status, :transaction_amount
 
   def initialize(sender, receiver, amount)
     @sender = sender
@@ -21,21 +21,23 @@ class Transfer
   end
 
   def execute_transaction
-
-    if @sender.valid? == false
-      "Transaction rejected. Please check your account balance."
-    else
+    if @sender.valid? == true && @sender.balance >= amount
       @sender.balance -= amount
       @receiver.balance += amount
+      @transaction_amount = amount
       @amount = 0
       @status = "complete"
+    else
+      @status = "rejected"
+      "Transaction rejected. Please check your account balance."
     end
   end
 
   def reverse_transfer
     if @status == "complete"
-      @sender.balance += amount
-      @receiver.balance -= amount
+      @sender.balance += @transaction_amount
+      @receiver.balance -= @transaction_amount
+      @status = "reversed"
     end
   end
 
